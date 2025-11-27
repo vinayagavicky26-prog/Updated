@@ -1,241 +1,83 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<title>ALONE → LOVE — Interactive</title>
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+</body>
+</html>
+<!DOCTYPE html>
+<html>
+<head>
 <style>
-  :root{
-    --bg:#0f1720; --text:#ffffff; --accent:#ff4081; --heart:#16a34a; --red:#e11d48;
-  }
-  html,body{height:100%; margin:0; background:var(--bg); color:var(--text); font-family:Inter, system-ui, Arial, sans-serif;}
-  .wrap{min-height:100vh; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:22px; padding:28px;}
-  .header-row{display:flex; gap:12px; align-items:center;}
-  .btn-prev{
-    background:linear-gradient(180deg,#ff6b6b,#e11d48);
-    border:none; color:white; padding:10px 16px; border-radius:8px; font-weight:700; cursor:pointer;
-    box-shadow: 0 6px 18px rgba(225,29,72,0.16); transition:transform .14s ease; font-size:14px;
-  }
-  .btn-prev:active{transform:translateY(2px)}
-  .sentence{font-size:64px; letter-spacing:8px; display:flex; align-items:center; gap:8px; justify-content:center; user-select:none; position:relative;}
-  .word{display:flex; gap:10px; align-items:center; position:relative;}
-  .letter{display:inline-block; padding:0 4px; position:relative; font-weight:800; transition:opacity .3s ease, transform .3s ease;}
-  .letter.hidden{opacity:0}
-  .controls{display:flex; gap:14px; align-items:center; justify-content:center;}
-  .btn-heart{
-    background:linear-gradient(180deg,#34d399,#16a34a);
-    border-radius:30px; border:none; width:220px; padding:12px 18px; color:white; font-weight:800; display:flex; gap:10px; align-items:center; justify-content:center;
-    box-shadow:0 10px 30px rgba(22,163,74,0.12); cursor:pointer; transition:transform .12s ease; font-size:16px;
-  }
-  .btn-heart:active{transform:translateY(2px)}
-  .heart-circle{width:44px; height:44px; border-radius:50%; background:white; color:var(--heart); display:grid; place-items:center; font-weight:900;}
-  .btn-stop{
-    background:linear-gradient(180deg,#facc15,#f97316); color:#111; font-weight:800; border:none; padding:10px 16px;
-    border-radius:10px; cursor:pointer; display:none; box-shadow:0 8px 24px rgba(249,115,22,0.12);
-  }
+    body {
+        background:#111;
+        color:white;
+        font-family:Arial, sans-serif;
+        text-align:center;
+        margin-top:100px;
+    }
 
-  /* flying clone */
-  .fly-clone{position:absolute; pointer-events:none; z-index:50; font-weight:800; color:var(--text); text-shadow:0 6px 18px rgba(0,0,0,0.6); will-change:transform,opacity;}
-  .glow{ color:var(--accent); text-shadow:0 0 20px rgba(255,64,129,0.6); }
+    .word {
+        font-size:80px;
+        letter-spacing:20px;
+        display:flex;
+        justify-content:center;
+    }
 
-  /* burn vertical line */
-  .burn-line{
-    position:absolute; width:3px; border-radius:2px; background:linear-gradient(180deg,#fff,#ffb347,#ff4500);
-    box-shadow:0 0 18px 6px rgba(255,120,0,0.6); pointer-events:none; z-index:60; transform-origin:center top;
-  }
+    .letter {
+        display:inline-block;
+        transition: all 0.7s ease;
+        width:80px;
+        text-align:center;
+    }
 
-  /* small text */
-  .note{color:#9aa3ae; font-size:13px; text-align:center;}
-  @media (max-width:520px){ .sentence{font-size:36px} .fly-clone{font-size:36px} .btn-heart{width:170px} }
+    /* N to V animation */
+    .transform {
+        transform: rotate(20deg) scale(1.2);
+        color:#ff4081;
+        text-shadow:0 0 20px #ff4081;
+    }
+
+    button {
+        margin-top:40px;
+        padding:12px 25px;
+        font-size:20px;
+        border:none;
+        border-radius:8px;
+        background:#ff4081;
+        color:white;
+        cursor:pointer;
+        box-shadow:0 0 10px #ff4081;
+    }
 </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="header-row">
-      <button id="btnPrev" class="btn-prev">Previously I Was ALONE</button>
-    </div>
 
-    <div class="sentence" id="sentenceArea" aria-live="polite">
-      <div class="word" id="wordBlock">
-        <span class="letter" id="L">L</span>
-        <span class="letter" id="O">O</span>
-        <span class="letter" id="A">A</span>
-        <span class="letter" id="N">N</span>
-        <span class="letter" id="E">E</span>
-      </div>
-    </div>
+<div class="word">
+    <div class="letter">L</div>
+    <div class="letter">O</div>
+    <div class="letter" id="change">N</div>
+    <div class="letter">E</div>
+</div>
 
-    <div class="controls">
-      <button id="btnUpdate" class="btn-heart"><span class="heart-circle">♥</span> Click here to update</button>
-      <button id="btnStop" class="btn-stop">Stop here</button>
-    </div>
-
-    <div class="note">Click the green button to animate → when A is swirling, click "Stop here" to morph to LOVE</div>
-  </div>
-
-  <!-- stage for clones and burn -->
-  <div id="stage" style="position:fixed; inset:0; pointer-events:none;"></div>
+<button onclick="changeToV()">Click here for current update</button>
 
 <script>
-(function(){
-  // elements
-  const btnPrev = document.getElementById('btnPrev');
-  const btnUpdate = document.getElementById('btnUpdate');
-  const btnStop = document.getElementById('btnStop');
-  const L = document.getElementById('L'), O = document.getElementById('O'), A = document.getElementById('A'), N = document.getElementById('N'), E = document.getElementById('E');
-  const stage = document.getElementById('stage');
+function changeToV() {
+    let letter = document.getElementById("change");
 
-  let clone = null, spinAnim = null, arrived=false;
+    // Add animation effect
+    letter.classList.add("transform");
 
-  // helper center
-  function center(el){
-    const r = el.getBoundingClientRect();
-    return { x: r.left + r.width/2 + window.scrollX, y: r.top + r.height/2 + window.scrollY, w:r.width, h:r.height, rect:r };
-  }
-
-  function createClone(el){
-    const node = el.cloneNode(true);
-    node.className = 'fly-clone';
-    const r = el.getBoundingClientRect();
-    node.style.left = (r.left + window.scrollX) + 'px';
-    node.style.top = (r.top + window.scrollY) + 'px';
-    node.style.fontSize = window.getComputedStyle(el).fontSize;
-    stage.appendChild(node);
-    return node;
-  }
-
-  // fly A -> N with swirl
-  function flyAtoN(done){
-    A.style.opacity = '0'; // hide original A
-    const start = center(A);
-    const target = center(N);
-    clone = createClone(A);
-
-    const dx = target.x - start.x;
-    const dy = target.y - start.y;
-
-    // keyframes: lifted swirl then land
-    const frames = [
-      { transform:`translate(0px,0px) rotate(0deg)`, opacity:1, offset:0 },
-      { transform:`translate(${dx*0.35}px, ${dy*0.25 - 120}px) rotate(360deg)`, offset:0.45 },
-      { transform:`translate(${dx*0.75}px, ${dy*0.08 - 30}px) rotate(720deg)`, offset:0.85 },
-      { transform:`translate(${dx}px, ${dy}px) rotate(1080deg)`, offset:1 }
-    ];
-    const anim = clone.animate(frames, { duration:900, easing:'cubic-bezier(.2,.8,.2,1)', fill:'forwards' });
-    anim.onfinish = () => {
-      // fade out original N
-      N.style.transition = 'opacity .45s ease';
-      N.style.opacity = '0';
-      arrived = true;
-      if(done) done();
-    };
-  }
-
-  // start swirling in place for 5s (loop)
-  function startSwirlLoop(){
-    if(!clone) return;
-    clone.classList.add('glow');
-    // use WAAPI infinite rotation
-    spinAnim = clone.animate([
-      { transform: clone.style.transform + ' rotate(0deg)' },
-      { transform: clone.style.transform + ' rotate(360deg)' }
-    ], { duration:1600, iterations: Infinity, easing:'linear' });
-    // show stop button after a short delay
-    setTimeout(()=>{ btnStop.style.display='inline-block'; }, 300);
-  }
-
-  // burn effect then morph to V
-  function burnAndMorph(){
-    if(!clone) return;
-    // freeze the swirl
-    if(spinAnim){ try { spinAnim.cancel(); } catch(e){} spinAnim = null; }
-    // flip upside down (simulate ∀) quickly
-    clone.animate([
-      { transform: clone.style.transform + ' rotate(0deg) scale(1)' },
-      { transform: clone.style.transform + ' rotateX(180deg) scale(1.02)' }
-    ], { duration:420, easing:'cubic-bezier(.2,.8,.2,1)', fill:'forwards' }).onfinish = () => {
-      // create burn line at center of clone
-      const rect = clone.getBoundingClientRect();
-      const burn = document.createElement('div');
-      burn.className = 'burn-line';
-      burn.style.left = (rect.left + rect.width/2 - 1) + 'px';
-      burn.style.top  = (rect.top + rect.height*0.12) + 'px';
-      burn.style.height = '0px';
-      stage.appendChild(burn);
-
-      // animate burn: grow then fade
-      const ba = burn.animate([
-        { height: '0px', opacity:1, transform:'scaleY(0)' },
-        { height: (rect.height*0.8)+'px', opacity:1, transform:'scaleY(1)' },
-        { height: (rect.height*0.9)+'px', opacity:0.8, transform:'scaleY(1.05)' },
-        { height: (rect.height*0.95)+'px', opacity:0, transform:'scaleY(1)' }
-      ], { duration:600, easing:'ease-in' });
-
-      ba.onfinish = () => {
-        // morph visual: change clone char to V and small bounce
-        clone.textContent = 'V';
-        clone.classList.add('glow');
-        clone.style.transform = clone.style.transform + ' scale(1.05)';
-        clone.animate([
-          { transform: clone.style.transform + ' translateY(0px) scale(1.05)' },
-          { transform: clone.style.transform + ' translateY(-8px) scale(1.12)' },
-          { transform: clone.style.transform + ' translateY(0px) scale(1)' }
-        ], { duration:520, easing:'cubic-bezier(.2,.9,.3,1)' });
-
-        // final: set DOM N to V and reveal it, hide clone after tiny delay
-        setTimeout(() => {
-          N.textContent = 'V';
-          N.style.opacity = '1';
-          N.classList.add('glow');
-          // hide original A (it was hidden) and remove clone
-          A.style.opacity = '0';
-          if(burn && burn.parentNode) burn.remove();
-          if(clone && clone.parentNode) clone.remove();
-          clone = null;
-          btnStop.style.display='none';
-        }, 520);
-      };
-    };
-  }
-
-  // reset
-  function resetAll(){
-    // remove clone if present
-    if(clone){ try{ clone.remove(); }catch(e){} clone=null; }
-    if(spinAnim){ try{ spinAnim.cancel(); }catch(e){} spinAnim=null; }
-    // restore letters
-    L.style.opacity='1'; O.style.opacity='1'; A.style.opacity='1'; N.style.opacity='1'; E.style.opacity='1';
-    A.textContent='A'; N.textContent='N'; N.classList.remove('glow'); 
-    btnStop.style.display='none';
-    arrived=false;
-  }
-
-  // event wiring
-  btnUpdate.addEventListener('click', () => {
-    if(arrived) return; // no double
-    flyAtoN(() => {
-      // after arrival start swirl loop
-      startSwirlLoop();
-      // automatically ensure Stop is visible after 5s if user doesn't interact? (we show early)
-      // user will click Stop to morph
-    });
-  });
-
-  btnStop.addEventListener('click', () => {
-    if(!arrived) return;
-    burnAndMorph();
-  });
-
-  btnPrev.addEventListener('click', () => {
-    resetAll();
-  });
-
-  // cleanup on resize
-  window.addEventListener('resize', () => {
-    resetAll();
-  });
-
-})();
+    setTimeout(() => {
+        letter.textContent = "V";  // Replace N → V
+    }, 300);   // slight delay so animation shows first
+}
 </script>
+
 </body>
 </html>
+
