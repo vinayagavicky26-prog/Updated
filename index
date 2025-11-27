@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+</body>
+</html>
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+    body {
+        background:#111;
+        color:white;
+        font-family:Arial, sans-serif;
+        text-align:center;
+        margin-top:100px;
+    }
+
+    .word {
+        font-size:80px;
+        letter-spacing:20px;
+        display:flex;
+        justify-content:center;
+    }
+
+    .letter {
+        display:inline-block;
+        transition: all 0.7s ease;
+        width:80px;
+        text-align:center;
+    }
+
+    /* N to V animation */
+    .transform {
+        transform: rotate(20deg) scale(1.2);
+        color:#ff4081;
+        text-shadow:0 0 20px #ff4081;
+    }
+
+    button {
+        margin-top:40px;
+        padding:12px 25px;
+        font-size:20px;
+        border:none;
+        border-radius:8px;
+        background:#ff4081;
+        color:white;
+        cursor:pointer;
+        box-shadow:0 0 10px #ff4081;
+    }
+</style>
+</head>
+<body>
+
+<div class="word">
+    <div class="letter">L</div>
+    <div class="letter">O</div>
+    <div class="letter" id="change">N</div>
+    <div class="letter">E</div>
+</div>
+
+<button onclick="changeToV()">Click here for current update</button>
+
+<script>
+function changeToV() {
+    let letter = document.getElementById("change");
+
+    // Add animation effect
+    letter.classList.add("transform");
+
+    setTimeout(() => {
+        letter.textContent = "V";  // Replace N → V
+    }, 300);   // slight delay so animation shows first
+}
+</script>
+
+</body>
+</html>
+
