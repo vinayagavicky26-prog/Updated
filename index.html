@@ -1,83 +1,147 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+<meta charset="UTF-8">
+<title>LONE → LOVE Animation</title>
 
-</body>
-</html>
-<!DOCTYPE html>
-<html>
-<head>
 <style>
     body {
         background:#111;
         color:white;
         font-family:Arial, sans-serif;
         text-align:center;
-        margin-top:100px;
+        height:100vh;
+        overflow:hidden;
+    }
+
+    .container {
+        margin-top:120px;
     }
 
     .word {
-        font-size:80px;
-        letter-spacing:20px;
+        font-size:90px;
+        letter-spacing:25px;
         display:flex;
         justify-content:center;
+        gap:25px;
+        opacity:1;
+        transition:opacity 0.5s ease;
     }
 
     .letter {
         display:inline-block;
-        transition: all 0.7s ease;
-        width:80px;
-        text-align:center;
+        position:relative;
+        transition:all 0.7s ease;
     }
 
-    /* N to V animation */
-    .transform {
-        transform: rotate(20deg) scale(1.2);
+    /* Falling Animation */
+    .fall {
+        transform:translateY(120px) rotate(25deg);
+        opacity:0;
+    }
+
+    /* Rising animation (reverse fall) */
+    .rise {
+        transform:translateY(-120px);
+        opacity:0;
+    }
+
+    /* N → V glow effect */
+    .transform-glow {
         color:#ff4081;
         text-shadow:0 0 20px #ff4081;
+        transform:scale(1.2) rotate(20deg);
     }
 
     button {
         margin-top:40px;
-        padding:12px 25px;
+        padding:12px 30px;
         font-size:20px;
         border:none;
         border-radius:8px;
         background:#ff4081;
         color:white;
         cursor:pointer;
-        box-shadow:0 0 10px #ff4081;
+        box-shadow:0 0 15px #ff4081;
+    }
+
+    .btn-box {
+        display:flex;
+        justify-content:center;
+        gap:20px;
     }
 </style>
 </head>
+
 <body>
 
-<div class="word">
-    <div class="letter">L</div>
-    <div class="letter">O</div>
-    <div class="letter" id="change">N</div>
-    <div class="letter">E</div>
+<div class="container">
+    <div class="word">
+        <div class="letter" id="L">L</div>
+        <div class="letter" id="O">O</div>
+        <div class="letter" id="C">N</div>
+        <div class="letter" id="E">E</div>
+    </div>
+
+    <div class="btn-box">
+        <button onclick="previous()">Previous</button>
+        <button onclick="next()">Next</button>
+    </div>
 </div>
 
-<button onclick="changeToV()">Click here for current update</button>
-
 <script>
-function changeToV() {
-    let letter = document.getElementById("change");
+function next() {
+    let L = document.getElementById("L");
+    let O = document.getElementById("O");
+    let N = document.getElementById("C");
+    let E = document.getElementById("E");
 
-    // Add animation effect
-    letter.classList.add("transform");
+    // Step 1: Make letters fall
+    [L, O, N, E].forEach((el) => {
+        el.classList.remove("rise");
+        el.classList.add("fall");
+    });
 
+    // Step 2: Change N → V after falling
     setTimeout(() => {
-        letter.textContent = "V";  // Replace N → V
-    }, 300);   // slight delay so animation shows first
+        N.innerText = "V";
+        N.classList.add("transform-glow");
+    }, 600);
+
+    // Step 3: Bring letters back up
+    setTimeout(() => {
+        [L, O, N, E].forEach((el) => {
+            el.classList.remove("fall");
+        });
+    }, 800);
+}
+
+function previous() {
+    let L = document.getElementById("L");
+    let O = document.getElementById("O");
+    let N = document.getElementById("C");
+    let E = document.getElementById("E");
+
+    // Step 1: Rise animation
+    [L, O, N, E].forEach((el) => {
+        el.classList.remove("fall");
+        el.classList.add("rise");
+    });
+
+    // Step 2: V → N revert
+    setTimeout(() => {
+        N.innerText = "N";
+        N.classList.remove("transform-glow");
+    }, 600);
+
+    // Step 3: Return to normal
+    setTimeout(() => {
+        [L, O, N, E].forEach((el) => {
+            el.classList.remove("rise");
+        });
+    }, 800);
 }
 </script>
 
 </body>
 </html>
-
